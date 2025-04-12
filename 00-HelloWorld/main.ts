@@ -1,18 +1,21 @@
-import { Yelix } from "jsr:@murat/yelix";
-import * as path from "jsr:@std/path@1.0.8";
+import { type OptionalAppConfigType, Yelix } from "jsr:@murat/yelix";
+import endpoints from "./endpoints.ts";
 
-export async function main() {
+export async function main(config?: OptionalAppConfigType) {
   // Port is 3030 by default
-  const app = new Yelix();
+  const yelixConfig: OptionalAppConfigType = {
+    environment: "dev",
+  };
 
-  // Load endpoints from a 'api' folder
-  const currentDir = Deno.cwd();
-  const API_Folder = path.join(currentDir, "api");
-  await app.loadEndpointsFromFolder(API_Folder);
+  const app = new Yelix(config || yelixConfig);
 
-  app.serve();
+  // Load endpoints from the 'api' folder
+  app.loadEndpoints(endpoints);
 
+  await app.serve();
   return app;
 }
 
-await main();
+if (import.meta.main) {
+  await main();
+}
